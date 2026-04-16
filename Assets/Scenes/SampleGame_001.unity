@@ -542,7 +542,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 525495949}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 950af9d1adea1a243a0127277d849c01, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -624,11 +624,12 @@ Transform:
   m_GameObject: {fileID: 525495949}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 2, z: 0.035}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1594988641}
+  - {fileID: 1645801418}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &525495955
@@ -644,7 +645,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 5
-  jumpForce: 5
+  jumpForce: 7
+  turnspeed: 10
+  fallMultiplier: 2.5
+  lowJumpMultiplier: 2
+  coyoteTime: 0.15
+  coyoteTimeCounter: 0
+  realGrounded: 1
+  gliderObject: {fileID: 1645801417}
+  gliderFallSpeed: 1
+  gliderFMoveSpeed: 7
+  gliderMaxTime: 5
+  gliderTimeLeft: 0
+  isGliding: 0
   rb: {fileID: 525495950}
   isGrounded: 1
   coinCount: 0
@@ -799,6 +812,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 641144613}
   m_CullTransparentMesh: 1
+--- !u!1001 &662920586
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 525495954}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.01
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+      propertyPath: m_Name
+      value: Glider
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
 --- !u!1 &794948838
 GameObject:
   m_ObjectHideFlags: 0
@@ -1150,7 +1220,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 698f3bb561318a74ab55c18f435323fd, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.63
+      value: 0.403
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 698f3bb561318a74ab55c18f435323fd, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1193,6 +1263,16 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 698f3bb561318a74ab55c18f435323fd, type: 3}
   m_PrefabInstance: {fileID: 1594988640}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1645801417 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+  m_PrefabInstance: {fileID: 662920586}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1645801418 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 237c9676dff67dc47b39e0161663abf6, type: 3}
+  m_PrefabInstance: {fileID: 662920586}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1797205511
 GameObject:
