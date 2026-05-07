@@ -24,7 +24,7 @@ public class DraggableRank : MonoBehaviour
     {
         mainCamera = Camera.main;
         spriteRenderer = GetComponent<SpriteRenderer>();
-        gameManager = FindObjectOfType<RankGameManager>();
+        gameManager = FindAnyObjectByType<RankGameManager>();
     }
 
     void Start()
