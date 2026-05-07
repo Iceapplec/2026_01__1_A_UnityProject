@@ -6,7 +6,14 @@ public class GridCell : MonoBehaviour
     public int x, y;
     public DraggableRank currentRank;
     public SpriteRenderer cellRenderer;
-    
+
+
+    private void Awake()
+    {
+        cellRenderer = GetComponent<SpriteRenderer>();
+
+    }
+
 
     public void Initialize(int gridX, int gridY)
     {

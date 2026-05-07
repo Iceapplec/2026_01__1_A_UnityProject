@@ -19,6 +19,76 @@ public class DraggableRank : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public RankGameManager gameManager;
 
+
+    private void Awake()
+    {
+        mainCamera = Camera.main;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        gameManager = FindObjectOfType<RankGameManager>();
+    }
+
+    void Start()
+    {
+        originalPosition = transform.position;
+    }
+    void Update()
+    {
+        if (isDragging)
+        {
+            Vector3 targetPosition = GetMouseWorldPosition() + dragOffset;
+            transform.position = Vector3.Lerp(transform.position, targetPosition, dragSpeed * Time.deltaTime);
+        }
+        else if (transform.position != originalPosition && currentCell != null)
+        {
+            transform.position = Vector3.Lerp(transform.position, originalPosition, snapBackSpeed * Time.deltaTime);
+        }
+    }
+
+
+    private void OnMouseDown()
+    {
+        StartDragging();
+    }
+
+    private void OnMouseUp()
+    {
+        if(!isDragging)return;
+        StopDragging();
+
+    }
+    void StartDragging()
+    {
+        isDragging = true;
+        dragOffset = transform.position - GetMouseWorldPosition();
+        spriteRenderer.sortingOrder = 10;
+    }
+
+    void StopDragging()
+    {
+        isDragging = false;
+        spriteRenderer.sortingLayerID = 1;
+        GridCell targetCell = gameManager.FindClosestCell(transform.position);
+
+        if (targetCell != null)
+        {
+            if (targetCell.currentRank != null)
+            {
+                MoveToCell(targetCell);
+            }
+            else if (targetCell.currentRank != this && targetCell.currentRank.rankLevel == rankLevel)
+            {
+                MergeWithCell(targetCell);
+            }
+            else
+            {
+                ReturnToOtiginalPosition();
+            }
+        }
+        else
+        {
+            ReturnToOtiginalPosition();
+        }
+    }
     public void MoveToCell(GridCell targetCell)
     {
         if(currentCell != null)
@@ -50,6 +120,8 @@ public class DraggableRank : MonoBehaviour
         {
             currentCell.currentRank = null;
         }
+
+        gameManager.MergeRanks(this, targetCell.currentRank);
     }
 
 

@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
+using Mono.Cecil.Cil;
 
 public class RankGameManager : MonoBehaviour
 {
@@ -44,6 +45,14 @@ public class RankGameManager : MonoBehaviour
         InitializeGrid();
 
         for (int i = 0; i < 4; i++)
+        {
+            SpawnNewRank();
+        }
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.D))
         {
             SpawnNewRank();
         }
@@ -96,5 +105,76 @@ public class RankGameManager : MonoBehaviour
         CreateRankInCell(emptyCell, rankLevel);
         return true;
     }
+
+    public GridCell FindClosestCell(Vector3 position)
+    {
+        for(int x = 0;x < gridWidth; x++)
+        {
+            for (int y = 0; y < gridHeight; y++)
+            {
+                if (grid[x, y].ContainsPosition(position))
+                {
+                    return grid[x, y];
+                }
+            }
+        }
+
+        GridCell closestCell = null;
+        float closestDistance = float.MaxValue;
+
+        for(int x = 0; x < gridWidth; x++)
+        {
+            for (int y = 0; y < gridHeight; y++)
+            {
+                float distance = Vector3.Distance(position, grid[x, y].transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestCell = grid[x, y];
+                }
+            }
+        }
+
+        if(closestDistance > CellSize * 2)
+        {
+            return null;
+        }
+
+        return closestCell;
+    }
+
+    public void RemoveRank(DraggableRank rank)
+    {
+        if(rank == null) return;
+
+        if(rank.currentCell != null)
+        {
+            rank.currentCell.currentRank = null;
+        }
+
+        Destroy(rank.gameObject);
+    }
+
+    public void MergeRanks(DraggableRank draggedRank,DraggableRank targetRank)
+    {
+        if (draggedRank == null || targetRank == null || draggedRank.rankLevel != targetRank.rankLevel)
+        {
+            if(draggedRank != null) draggedRank.ReturnToOtiginalPosition();
+            return;
+        }
+
+        int newLevel = targetRank.rankLevel + 1;    
+        if (newLevel > maxRankLevel)
+        {
+            RemoveRank(draggedRank);
+            return;
+        }
+
+        targetRank.SetRankLevel(newLevel);
+        RemoveRank(draggedRank);
+    }
+
+
+
 
 }
